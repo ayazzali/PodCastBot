@@ -16,10 +16,11 @@ namespace PodCastBot
 {
     class Program
     {
+        //static Logger log = LogManager.GetCurrentClassLogger();
         private static readonly TelegramBotClient Bot = new TelegramBotClient("267989730:AAH7VbASzQeOLWf8iLSdusooE00Pg_qlao4");
 
         static string StorePath = "podcasts.txt";
-        static List<string >Store = System.IO.File.ReadAllLines(StorePath).ToList();
+        static List<string> Store = System.IO.File.ReadAllLines(StorePath).ToList();
 
 
         static void Main(string[] args)
@@ -31,10 +32,15 @@ namespace PodCastBot
             Bot.OnInlineResultChosen += BotOnChosenInlineResultReceived;
             Bot.OnReceiveError += BotOnReceiveError;
 
-            var me = Bot.GetMeAsync().Result;
+            
+            try
+            {
+                var me = Bot.GetMeAsync().Result;
 
-            Console.Title = me.Username;
+                Console.Title = me.Username;
 
+            }
+            catch (Exception e) { /*log.Warn(e, "не смогли узнать имя бота.");*/ }
             Bot.StartReceiving();
             Console.ReadLine();
             Bot.StopReceiving();

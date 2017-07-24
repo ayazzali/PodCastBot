@@ -9,6 +9,10 @@
       "type": "platform",
       "version": "1.0.1"
     },
+    "NLog.Config": "4.4.6",
+    "NLog.InstallNLogConfig": "2.0.0",
+    "NLog.Schema": "4.4.6",
+    "NLog.Web.AspNetCore": "4.3.1",
     "Telegram.Bot": "10.4.0"
   },
 
