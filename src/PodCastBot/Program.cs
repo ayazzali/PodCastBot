@@ -38,7 +38,7 @@ namespace PodCastBot
             {
                 var me = Bot.GetMeAsync().Result;
 
-                Console.Title = me.Username;
+                //Console.Title = me.Username;
 
             }
             catch (Exception e) { /*log.Warn(e, "не смогли узнать имя бота.");*/ }
@@ -54,7 +54,7 @@ namespace PodCastBot
 
         private static void BotOnChosenInlineResultReceived(object sender, ChosenInlineResultEventArgs chosenInlineResultEventArgs)
         {
-            Console.WriteLine($"Received choosen inline result: {chosenInlineResultEventArgs.ChosenInlineResult.ResultId}");
+            //Console.WriteLine($"Received choosen inline result: {chosenInlineResultEventArgs.ChosenInlineResult.ResultId}");
         }
 
         private static async void BotOnInlineQueryReceived(object sender, InlineQueryEventArgs inlineQueryEventArgs)
