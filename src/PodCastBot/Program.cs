@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Args;
@@ -42,7 +43,7 @@ namespace PodCastBot
             }
             catch (Exception e) { /*log.Warn(e, "не смогли узнать имя бота.");*/ }
             Bot.StartReceiving();
-            Console.ReadLine();
+            while(true){Thread.Sleep(999999999);}//Console.ReadLine(); //instead this
             Bot.StopReceiving();
         }
 
