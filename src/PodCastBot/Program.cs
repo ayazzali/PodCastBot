@@ -36,6 +36,7 @@ namespace PodCastBot
 
         static void Main(string[] args)
         {
+            //for running in background //nohun dotnet run&
             //init logs
             ApplicationLogging.LoggerFactory.AddNLog();
             ApplicationLogging.LoggerFactory.ConfigureNLog("NLog.config");
@@ -45,7 +46,7 @@ namespace PodCastBot
             log.LogCritical("Yeap!)"); log.LogError("Yeap!)");
             //end logs
 
-            Bot.SetWebhookAsync("");
+            Bot.SetWebhookAsync("").Start();
             Bot.OnCallbackQuery += BotOnCallbackQueryReceived;
             Bot.OnMessage += BotOnMessageReceived;
             Bot.OnMessageEdited += BotOnMessageReceived;
@@ -138,7 +139,7 @@ namespace PodCastBot
 
 
 
-
+return;
             //может приголится..
             if (message.Text.StartsWith("/inline")) // send inline keyboard
             {
