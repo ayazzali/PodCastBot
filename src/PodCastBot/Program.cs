@@ -46,7 +46,7 @@ namespace PodCastBot
             log.LogCritical("Yeap!)"); log.LogError("Yeap!)");
             //end logs
 
-            Bot.SetWebhookAsync("").Start();
+            Bot.SetWebhookAsync("").Wait();
             Bot.OnCallbackQuery += BotOnCallbackQueryReceived;
             Bot.OnMessage += BotOnMessageReceived;
             Bot.OnMessageEdited += BotOnMessageReceived;
