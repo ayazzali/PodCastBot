@@ -12,20 +12,40 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.InputMessageContents;
 using Telegram.Bot.Types.ReplyMarkups;
+using Microsoft.Extensions.Logging;
+using NLog.Web;
+using NLog.Extensions.Logging;
 
 namespace PodCastBot
 {
     class Program
     {
-        //static Logger log = LogManager.GetCurrentClassLogger();
+        static ILogger log;
         private static readonly TelegramBotClient Bot = new TelegramBotClient("267989730:AAH7VbASzQeOLWf8iLSdusooE00Pg_qlao4");
 
         static string StorePath = "podcasts.txt";
         static List<string> Store = System.IO.File.ReadAllLines(StorePath).ToList();
 
+        public static class ApplicationLogging
+        {
+            public static ILoggerFactory LoggerFactory { get; } =
+              new LoggerFactory();
+            public static ILogger CreateLogger<T>() =>
+              LoggerFactory.CreateLogger<T>();
+        }
 
         static void Main(string[] args)
         {
+            //init logs
+            ApplicationLogging.LoggerFactory.AddNLog();
+            ApplicationLogging.LoggerFactory.ConfigureNLog("NLog.config");
+            log = ApplicationLogging.LoggerFactory.CreateLogger("my name");
+
+            //ApplicationLogging.LoggerFactory.AddConsole();//then logs will be doubled, couse NLog.config have console type logs too :)
+            log.LogCritical("Yeap!)"); log.LogError("Yeap!)");
+            //end logs
+
+            Bot.SetWebhookAsync("");
             Bot.OnCallbackQuery += BotOnCallbackQueryReceived;
             Bot.OnMessage += BotOnMessageReceived;
             Bot.OnMessageEdited += BotOnMessageReceived;
@@ -33,7 +53,7 @@ namespace PodCastBot
             Bot.OnInlineResultChosen += BotOnChosenInlineResultReceived;
             Bot.OnReceiveError += BotOnReceiveError;
 
-            
+
             try
             {
                 var me = Bot.GetMeAsync().Result;
@@ -41,15 +61,17 @@ namespace PodCastBot
                 //Console.Title = me.Username;
 
             }
-            catch (Exception e) { /*log.Warn(e, "не смогли узнать имя бота.");*/ }
+            catch (Exception e) { log.LogWarning(e, "не смогли узнать имя бота."); }
             Bot.StartReceiving();
-            while(true){Thread.Sleep(999999999);}//Console.ReadLine(); //instead this
-            Bot.StopReceiving();
+            while (true) { Thread.Sleep(999999999); }//Console.ReadLine(); //instead this
+            //Bot.StopReceiving();
         }
 
         private static void BotOnReceiveError(object sender, ReceiveErrorEventArgs receiveErrorEventArgs)
         {
-            Debugger.Break();
+            log.LogWarning(receiveErrorEventArgs.ApiRequestException.Message);
+            Thread.Sleep(5000);
+            //Debugger.Break();
         }
 
         private static void BotOnChosenInlineResultReceived(object sender, ChosenInlineResultEventArgs chosenInlineResultEventArgs)
@@ -112,7 +134,7 @@ namespace PodCastBot
             await Bot.SendTextMessageAsync(message.Chat.Id, Store.Aggregate((av, e) => av + e)
                 /*replyMarkup: keyboard*/);
 
-            return;
+
 
 
 
