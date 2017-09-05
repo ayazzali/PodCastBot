@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <AssemblyName>PodCastBot</AssemblyName>
@@ -10,16 +9,16 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
-
   <ItemGroup>
-  <!-- Pay attention below!!! -->
+    <!-- Pay attention below!!! -->
     <None Include="NLog.config" CopyToOutputDirectory="PreserveNewest" />
-    <PackageReference Include="NLog.Config" Version="4.4.6"/>
-    <PackageReference Include="NLog.InstallNLogConfig" Version="2.0.0"/>
-    <PackageReference Include="NLog.Schema" Version="4.4.6"/>
-    <PackageReference Include="NLog.Web.AspNetCore" Version="4.3.1"/>
-    <PackageReference Include="Telegram.Bot" Version="10.4.0"/>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0"/>
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0"/>
+    <PackageReference Include="NLog.Config" Version="4.4.6" />
+    <PackageReference Include="NLog.InstallNLogConfig" Version="2.0.0" />
+    <PackageReference Include="NLog.Schema" Version="4.4.6" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="4.3.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.0" />
+    <PackageReference Include="Telegram.Bot" Version="10.4.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
   </ItemGroup>
 </Project>
