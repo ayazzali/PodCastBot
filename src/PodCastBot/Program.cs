@@ -15,6 +15,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
 using NLog.Extensions.Logging;
+using Iveonik.Stemmers;
 
 namespace PodCastBot
 {
@@ -113,6 +114,46 @@ namespace PodCastBot
             await Bot.AnswerInlineQueryAsync(inlineQueryEventArgs.InlineQuery.Id, results, isPersonal: true, cacheTime: 0);
         }
 
+        static string StemByRuEn(string text)
+        {
+            var r = new RussianStemmer().Stem(text);
+            var r2 = new EnglishStemmer().Stem(text);
+            if (r.Length > r2.Length)//we chosee the text which have deleted more 
+                return r2;
+            return r;
+        }
+
+        /// <summary>
+        /// Tuple: items rate, original list item
+        /// </summary>
+        /// <param name="SearchStr"></param>
+        /// <param name="list"></param>
+        /// <returns>Tuple: items rate, original list item</returns>
+        static List<Tuple<int, string>> GetRatingBySearchStr(string SearchStr, IEnumerable<string> list)
+        {
+            var stemmedSearchTextTrimed = StemByRuEn(SearchStr).Trim();
+            List<Tuple<int, string>> ratingBySearch = new List<Tuple<int, string>>();
+            foreach (var podcastItem in list)
+            {
+                var countOfMachedWords = 0;
+                foreach (var podcastWord in podcastItem
+                    .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                    .Where(_ => !string.IsNullOrEmpty(_))
+                    .Select(_ => _.Trim())
+                    )
+                {
+                    countOfMachedWords += stemmedSearchTextTrimed
+                        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                        .Where(_ => podcastWord.Contains(_))
+                        .Count();//hard Searching
+
+                }
+                if (countOfMachedWords > 0)
+                    ratingBySearch.Add(Tuple.Create(countOfMachedWords, podcastItem));
+            }
+            return ratingBySearch;
+        }
+
         private static async void BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
         {
             var message = messageEventArgs.Message;
@@ -126,21 +167,39 @@ namespace PodCastBot
 
                 System.IO.File.AppendAllText(StorePath, str);
                 Store.Add(str);
+                await Bot.SendTextMessageAsync(message.Chat.Id, "Спасибо за новый подкаст! Его увидят все мои 'подписчики'");
+                return;
             }
             //поиск по тегам/умныйПоиск в  message.Text
-            //...
+            var mTextLower = message.Text.ToLower();
+            if (mTextLower.StartsWith("/s") || mTextLower.StartsWith("/search") || mTextLower.StartsWith("/find"))
+            {
+                var SortedBySearch = GetRatingBySearchStr(mTextLower, Store)
+                    .OrderBy(_ => _.Item1)
+                    .Select(_ => _.Item2);
+
+
+                //выдача
+                if (SortedBySearch.Any())
+                {
+                    var t = SortedBySearch.Aggregate((av, e) => av + e);
+                    await Bot.SendTextMessageAsync(message.Chat.Id, t);
+                }
+                else
+                    await Bot.SendTextMessageAsync(message.Chat.Id, @"Поиск не дал результатов. 
+Чтобы вывести все подкасты - напишите /all");
+
+                return;
+            }
+
 
             //выдача
-            var test = Store.Aggregate((av, e) => av + e);
             await Bot.SendTextMessageAsync(message.Chat.Id, Store.Aggregate((av, e) => av + e)
                 /*replyMarkup: keyboard*/);
 
 
-
-
-
-return;
-            //может приголится..
+            return;
+            #region может приголится..
             if (message.Text.StartsWith("/inline")) // send inline keyboard
             {
                 await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.Typing);
@@ -226,6 +285,7 @@ return;
                 await Bot.SendTextMessageAsync(message.Chat.Id, usage,
                     replyMarkup: new ReplyKeyboardHide());
             }
+            #endregion
         }
 
         private static async void BotOnCallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEventArgs)

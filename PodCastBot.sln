@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8819E6C9-F515-4177-A52F-6788D33D1035}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A8C5E9FA-9922-4463-A2E8-61C1AC58C9A7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PodCastBot", "src\PodCastBot\PodCastBot.csproj", "{76B18772-3BF7-4B58-8720-5AF5A92D0D75}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stemmers", "src\Stemmers\Stemmers.csproj", "{0AC69461-B875-408B-9626-F4A03DEAF045}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,11 +21,19 @@ Global
 		{76B18772-3BF7-4B58-8720-5AF5A92D0D75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76B18772-3BF7-4B58-8720-5AF5A92D0D75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76B18772-3BF7-4B58-8720-5AF5A92D0D75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AC69461-B875-408B-9626-F4A03DEAF045}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AC69461-B875-408B-9626-F4A03DEAF045}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AC69461-B875-408B-9626-F4A03DEAF045}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AC69461-B875-408B-9626-F4A03DEAF045}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{76B18772-3BF7-4B58-8720-5AF5A92D0D75} = {8819E6C9-F515-4177-A52F-6788D33D1035}
+		{0AC69461-B875-408B-9626-F4A03DEAF045} = {8819E6C9-F515-4177-A52F-6788D33D1035}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AD72FB99-97FB-4B24-88A1-EF688FA94021}
 	EndGlobalSection
 EndGlobal
