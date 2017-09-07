@@ -177,7 +177,7 @@ namespace PodCastBot
             var mTextLower = message.Text.ToLower();
             if (mTextLower.StartsWith("/s") || mTextLower.StartsWith("/search") || mTextLower.StartsWith("/find"))
             {
-                var SortedBySearch = GetRatingBySearchStr(mTextLower, Store)
+                var SortedBySearch = GetRatingBySearchStr(mTextLower.Replace("/s",""), Store)
                     .OrderBy(_ => _.Item1)
                     .Select(_ => _.Item2);
 
