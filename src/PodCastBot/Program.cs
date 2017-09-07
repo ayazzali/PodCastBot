@@ -37,7 +37,10 @@ namespace PodCastBot
 
         static void Main(string[] args)
         {
-            //for running in background //nohun dotnet run&
+            //COMMANDS ON LINUX
+            //for running in background: nohun dotnet run&
+            //ps -e
+            //killall dotnet
             //init logs
             ApplicationLogging.LoggerFactory.AddNLog();
             ApplicationLogging.LoggerFactory.ConfigureNLog("NLog.config");
