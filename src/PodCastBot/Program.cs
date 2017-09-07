@@ -190,14 +190,14 @@ namespace PodCastBot
                 }
                 else
                     await Bot.SendTextMessageAsync(message.Chat.Id, @"Поиск не дал результатов. 
-Чтобы вывести все подкасты - напишите /all");
+Чтобы вывести все подкасты - напишите /all",parseMode: ParseMode.Html);
 
                 return;
             }
 
 
             //выдача
-            await Bot.SendTextMessageAsync(message.Chat.Id, Store.Aggregate((av, e) => av + Environment.NewLine+e)
+            await Bot.SendTextMessageAsync(message.Chat.Id, Store.Aggregate((av, e) => av + Environment.NewLine+e), parseMode: ParseMode.Html
                 /*replyMarkup: keyboard*/);
 
 
