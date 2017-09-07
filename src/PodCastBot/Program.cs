@@ -197,7 +197,7 @@ namespace PodCastBot
 
 
             //выдача
-            await Bot.SendTextMessageAsync(message.Chat.Id, Store.Aggregate((av, e) => av + e)
+            await Bot.SendTextMessageAsync(message.Chat.Id, Store.Aggregate((av, e) => av + Environment.NewLine+e)
                 /*replyMarkup: keyboard*/);
 
 
