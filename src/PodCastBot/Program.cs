@@ -161,9 +161,9 @@ namespace PodCastBot
             if (message == null || message.Type != MessageType.TextMessage) return;
 
             //config
-            if (message.Text.StartsWith("/addPodCast")) // добавить подкаст просто в наш список
+            if (message.Text.StartsWith("/add")) // добавить подкаст просто в наш список
             {
-                var str = message.Text.Replace("/addPodCast", Environment.NewLine);
+                var str = message.Text.Replace("/add", "").Replace(Environment.NewLine, "  ");
 
                 System.IO.File.AppendAllText(StorePath, str);
                 Store.Add(str);
