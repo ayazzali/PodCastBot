@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <AssemblyName>PodCastBot</AssemblyName>
@@ -10,9 +9,8 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
-
   <ItemGroup>
-  <!-- Pay attention below!!! -->
+    <!-- Pay attention below!!! -->
     <None Include="NLog.config" CopyToOutputDirectory="PreserveNewest" />
     <PackageReference Include="NLog.Config" Version="4.4.6" />
     <PackageReference Include="NLog.InstallNLogConfig" Version="2.0.0" />
