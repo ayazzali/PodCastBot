@@ -38,7 +38,7 @@ namespace PodCastBot
         static void Main(string[] args)
         {
             //COMMANDS ON LINUX
-            //for running in background: nohun dotnet run&
+            //for running in background: nohup dotnet run&
             //ps -e
             //killall dotnet
             //init logs
