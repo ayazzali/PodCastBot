@@ -164,7 +164,8 @@ namespace PodCastBot
             if (message == null || message.Type != MessageType.TextMessage) return;
 
             //config
-            if (message.Text.StartsWith("/add")) // добавить подкаст просто в наш список
+            var mTextLower = message.Text.ToLower();
+            if (mTextLower.StartsWith("/add")) // добавить подкаст просто в наш список
             {
                 var str = message.Text.Replace("/add", "").Replace(Environment.NewLine, "  ");
 
@@ -173,8 +174,16 @@ namespace PodCastBot
                 await Bot.SendTextMessageAsync(message.Chat.Id, "Спасибо за новый подкаст! Его увидят все мои 'подписчики'");
                 return;
             }
+            if (mTextLower.StartsWith("/help") || mTextLower.StartsWith("/h"))
+            {
+                await Bot.SendTextMessageAsync(message.Chat.Id
+                    , @"/search or /s % search string %
+/add % url and info about new podcast %
+/all - shows all podcasts
+/help or /h - just such a command :)");
+                return;
+            }
             //поиск по тегам/умныйПоиск в  message.Text
-            var mTextLower = message.Text.ToLower();
             if (mTextLower.StartsWith("/s") || mTextLower.StartsWith("/search") || mTextLower.StartsWith("/find"))
             {
                 var SortedBySearch = GetRatingBySearchStr(mTextLower.Replace("/s",""), Store)
