@@ -169,11 +169,11 @@ namespace PodCastBot
             var mTextLower = message.Text.ToLower();
             if (mTextLower.StartsWith("/help") || mTextLower.StartsWith("/h"))
             {
-                await Bot.SendTextMessageAsync(message.Chat.Id
-                    , @"/search or /s % search string %
-/add % url and info about new podcast %
+                await Bot.SendTextMessageAsync(message.Chat.Id, 
+@"/search - searching
+/add - add new podcast 
 /all - shows all podcasts
-/help or /h - just such a command :)");
+/help - just such a command :)");
                 return;
             }
             ///потом команды, нуждающиеся в продолжении
