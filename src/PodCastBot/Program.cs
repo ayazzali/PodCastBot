@@ -75,7 +75,7 @@ namespace PodCastBot
         private static void BotOnReceiveError(object sender, ReceiveErrorEventArgs receiveErrorEventArgs)
         {
             log.LogWarning(receiveErrorEventArgs.ApiRequestException.Message);
-            Thread.Sleep(60*1000);
+            Thread.Sleep(60 * 1000);
             //Debugger.Break();
         }
 
@@ -169,7 +169,7 @@ namespace PodCastBot
             var mTextLower = message.Text.ToLower();
             if (mTextLower.StartsWith("/help") || mTextLower.StartsWith("/h"))
             {
-                await Bot.SendTextMessageAsync(message.Chat.Id, 
+                await Bot.SendTextMessageAsync(message.Chat.Id,
 @"/search - searching
 /add - add new podcast 
 /all - shows all podcasts
@@ -178,58 +178,60 @@ namespace PodCastBot
             }
             ///потом команды, нуждающиеся в продолжении
             if (mTextLower.StartsWith("/add")) // добавить подкаст просто в наш список
-                {MsgsHistory.Add(Tuple.Create(message.Chat.Id, message.Text));
-                await Bot.SendTextMessageAsync(message.Chat.Id, 
+            {
+                MsgsHistory.Add(Tuple.Create(message.Chat.Id, message.Text));
+                await Bot.SendTextMessageAsync(message.Chat.Id,
                 "Введите сылку на новый подкаст");
                 return;
-                }
+            }
             if (mTextLower.StartsWith("/s")) // добавить подкаст просто в наш список
-                {MsgsHistory.Add(Tuple.Create(message.Chat.Id, message.Text));
-                await Bot.SendTextMessageAsync(message.Chat.Id, 
+            {
+                MsgsHistory.Add(Tuple.Create(message.Chat.Id, message.Text));
+                await Bot.SendTextMessageAsync(message.Chat.Id,
                 @"Введите название языка или облость в которой хотите найти подкасты.
 (Наиболее вероятные подкасты будут вверху списка)");
-return;
-                }
+                return;
+            }
 
             ///повторные сообщения- ответы после команды
             var msgForCmd = MsgsHistory.SingleOrDefault(_ => _.Item1 == message.Chat.Id);
             if (msgForCmd != null)
             {
-                var x=MsgsHistory.Remove(msgForCmd);
+                var x = MsgsHistory.Remove(msgForCmd);
                 if (msgForCmd.Item2.StartsWith("/add"))
                 {
-                var str = message.Text.Replace("/add", "").Replace(Environment.NewLine, "  ");
+                    var str = message.Text.Replace("/add", "").Replace(Environment.NewLine, "  ");
 
-                System.IO.File.AppendAllText(StorePath, str);
-                Store.Add(str);
-                await Bot.SendTextMessageAsync(message.Chat.Id, "Спасибо за новый подкаст! Его увидят все мои 'подписчики'");
-                return;
+                    System.IO.File.AppendAllText(StorePath, str);
+                    Store.Add(str);
+                    await Bot.SendTextMessageAsync(message.Chat.Id, "Спасибо за новый подкаст! Его увидят все мои 'подписчики'");
+                    return;
                 }
                 //поиск по тегам/умныйПоиск в  message.Text
-            if (msgForCmd.Item2.StartsWith("/s") || mTextLower.StartsWith("/search") || mTextLower.StartsWith("/find"))
-            {
-                var SortedBySearch = GetRatingBySearchStr(mTextLower.Replace("/s",""), Store)
-                    .OrderBy(_ => _.Item1)
-                    .Select(_ => _.Item2);
-
-
-                //выдача
-                if (SortedBySearch.Any())
+                if (msgForCmd.Item2.StartsWith("/s") || mTextLower.StartsWith("/search") || mTextLower.StartsWith("/find"))
                 {
-                    var t = SortedBySearch.Aggregate((av, e) => av + e);
-                    await Bot.SendTextMessageAsync(message.Chat.Id, t);
-                }
-                else
-                    await Bot.SendTextMessageAsync(message.Chat.Id, @"Поиск не дал результатов. 
-Чтобы вывести все подкасты - напишите /all",parseMode: ParseMode.Html);
+                    var SortedBySearch = GetRatingBySearchStr(mTextLower.Replace("/s", ""), Store)
+                        .OrderBy(_ => _.Item1)
+                        .Select(_ => _.Item2);
 
-                return;
+
+                    //выдача
+                    if (SortedBySearch.Any())
+                    {
+                        var t = SortedBySearch.Aggregate((av, e) => av + e);
+                        await Bot.SendTextMessageAsync(message.Chat.Id, t);
+                    }
+                    else
+                        await Bot.SendTextMessageAsync(message.Chat.Id, @"Поиск не дал результатов. 
+Чтобы вывести все подкасты - напишите /all", parseMode: ParseMode.Html);
+
+                    return;
+                }
+
             }
-             
-            }
-            
+
             //выдача
-            await Bot.SendTextMessageAsync(message.Chat.Id, Store.Aggregate((av, e) => av + Environment.NewLine+e), parseMode: ParseMode.Html
+            await Bot.SendTextMessageAsync(message.Chat.Id, Store.Aggregate((av, e) => av + Environment.NewLine + e), parseMode: ParseMode.Html
                 /*replyMarkup: keyboard*/);
 
 
