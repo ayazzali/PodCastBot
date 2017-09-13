@@ -75,7 +75,7 @@ namespace PodCastBot
         private static void BotOnReceiveError(object sender, ReceiveErrorEventArgs receiveErrorEventArgs)
         {
             log.LogWarning(receiveErrorEventArgs.ApiRequestException.Message);
-            Thread.Sleep(5000);
+            Thread.Sleep(60*1000);
             //Debugger.Break();
         }
 
@@ -157,6 +157,7 @@ namespace PodCastBot
             return ratingBySearch;
         }
 
+        static List<Tuple<long, string>> MsgsHistory = new List<Tuple<long, string>>();
         private static async void BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
         {
             var message = messageEventArgs.Message;
@@ -164,16 +165,8 @@ namespace PodCastBot
             if (message == null || message.Type != MessageType.TextMessage) return;
 
             //config
+            ///сначала простые команды
             var mTextLower = message.Text.ToLower();
-            if (mTextLower.StartsWith("/add")) // добавить подкаст просто в наш список
-            {
-                var str = message.Text.Replace("/add", "").Replace(Environment.NewLine, "  ");
-
-                System.IO.File.AppendAllText(StorePath, str);
-                Store.Add(str);
-                await Bot.SendTextMessageAsync(message.Chat.Id, "Спасибо за новый подкаст! Его увидят все мои 'подписчики'");
-                return;
-            }
             if (mTextLower.StartsWith("/help") || mTextLower.StartsWith("/h"))
             {
                 await Bot.SendTextMessageAsync(message.Chat.Id
@@ -183,8 +176,37 @@ namespace PodCastBot
 /help or /h - just such a command :)");
                 return;
             }
-            //поиск по тегам/умныйПоиск в  message.Text
-            if (mTextLower.StartsWith("/s") || mTextLower.StartsWith("/search") || mTextLower.StartsWith("/find"))
+            ///потом команды, нуждающиеся в продолжении
+            if (mTextLower.StartsWith("/add")) // добавить подкаст просто в наш список
+                {MsgsHistory.Add(Tuple.Create(message.Chat.Id, message.Text));
+                await Bot.SendTextMessageAsync(message.Chat.Id, 
+                "Введите сылку на новый подкаст");
+                return;
+                }
+            if (mTextLower.StartsWith("/s")) // добавить подкаст просто в наш список
+                {MsgsHistory.Add(Tuple.Create(message.Chat.Id, message.Text));
+                await Bot.SendTextMessageAsync(message.Chat.Id, 
+                @"Введите название языка или облость в которой хотите найти подкасты.
+(Наиболее вероятные подкасты будут вверху списка)");
+return;
+                }
+
+            ///повторные сообщения- ответы после команды
+            var msgForCmd = MsgsHistory.SingleOrDefault(_ => _.Item1 == message.Chat.Id);
+            if (msgForCmd != null)
+            {
+                var x=MsgsHistory.Remove(msgForCmd);
+                if (msgForCmd.Item2.StartsWith("/add"))
+                {
+                var str = message.Text.Replace("/add", "").Replace(Environment.NewLine, "  ");
+
+                System.IO.File.AppendAllText(StorePath, str);
+                Store.Add(str);
+                await Bot.SendTextMessageAsync(message.Chat.Id, "Спасибо за новый подкаст! Его увидят все мои 'подписчики'");
+                return;
+                }
+                //поиск по тегам/умныйПоиск в  message.Text
+            if (msgForCmd.Item2.StartsWith("/s") || mTextLower.StartsWith("/search") || mTextLower.StartsWith("/find"))
             {
                 var SortedBySearch = GetRatingBySearchStr(mTextLower.Replace("/s",""), Store)
                     .OrderBy(_ => _.Item1)
@@ -203,8 +225,9 @@ namespace PodCastBot
 
                 return;
             }
-
-
+             
+            }
+            
             //выдача
             await Bot.SendTextMessageAsync(message.Chat.Id, Store.Aggregate((av, e) => av + Environment.NewLine+e), parseMode: ParseMode.Html
                 /*replyMarkup: keyboard*/);
