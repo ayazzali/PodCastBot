@@ -45,7 +45,6 @@ namespace PodCastBot
             ApplicationLogging.LoggerFactory.AddNLog();
             ApplicationLogging.LoggerFactory.ConfigureNLog("NLog.config");
             log = ApplicationLogging.LoggerFactory.CreateLogger("my name");
-
             //ApplicationLogging.LoggerFactory.AddConsole();//then logs will be doubled, couse NLog.config have console type logs too :)
             log.LogCritical("Yeap!)"); log.LogError("Yeap!)");
             //end logs
