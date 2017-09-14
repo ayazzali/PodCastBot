@@ -40,6 +40,7 @@ namespace PodCastBot
             //for running in background: nohup dotnet run&
             //ps -e
             //killall dotnet
+            
             //init logs
             ApplicationLogging.LoggerFactory.AddNLog();
             ApplicationLogging.LoggerFactory.ConfigureNLog("NLog.config");
