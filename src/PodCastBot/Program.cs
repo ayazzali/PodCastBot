@@ -27,9 +27,8 @@ namespace PodCastBot
         static string StorePath = "podcasts.txt";
         static List<string> Store = System.IO.File.ReadAllLines(StorePath).ToList();
 
-        public static class ApplicationLogging
-        {
-            public static ILoggerFactory LoggerFactory { get; } =
+        using AppLog= PodCastBot.Program.ApplicationLogging;
+        public static class   LoggerFactory { get; } =
               new LoggerFactory();
             public static ILogger CreateLogger<T>() =>
               LoggerFactory.CreateLogger<T>();
