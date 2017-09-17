@@ -19,6 +19,18 @@ using Iveonik.Stemmers;
 
 namespace PodCastBot
 {
+    public static class ApplicationLogging
+        {
+            static ApplicationLogging()
+            {
+                ApplicationLogging.LoggerFactory.AddNLog();
+                ApplicationLogging.LoggerFactory.ConfigureNLog("NLog.config");
+            }
+            public static ILoggerFactory LoggerFactory { get; } =
+              new LoggerFactory();
+            public static ILogger CreateLogger<T>() =>
+              LoggerFactory.CreateLogger<T>();
+        }
     class Program
     {
         static ILogger log;
@@ -26,24 +38,15 @@ namespace PodCastBot
 
         static string StorePath = "podcasts.txt";
         static List<string> Store = System.IO.File.ReadAllLines(StorePath).ToList();
-
-        using AppLog= PodCastBot.Program.ApplicationLogging;
-        public static class   LoggerFactory { get; } =
-              new LoggerFactory();
-            public static ILogger CreateLogger<T>() =>
-              LoggerFactory.CreateLogger<T>();
-        }
-
         static void Main(string[] args)
         {
             //COMMANDS ON LINUX
             //for running in background: nohup dotnet run&
             //ps -e
             //killall dotnet
-            
+
             //init logs
-            ApplicationLogging.LoggerFactory.AddNLog();
-            ApplicationLogging.LoggerFactory.ConfigureNLog("NLog.config");
+
             log = ApplicationLogging.LoggerFactory.CreateLogger("my name");
             //ApplicationLogging.LoggerFactory.AddConsole();//then logs will be doubled, couse NLog.config have console type logs too :)
             log.LogCritical("Yeap!)"); log.LogError("Yeap!)");
