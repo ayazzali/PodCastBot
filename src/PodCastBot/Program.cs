@@ -22,7 +22,7 @@ using HtmlAgilityPack;
 
 namespace PodCastBot
 {
-    public static class ApplicationLogging
+    public static class ApplicationLogging// don't use - couse nlog 5 works
     {
         static ApplicationLogging()
         {
@@ -59,6 +59,7 @@ namespace PodCastBot
             log.LogCritical("Yeap!)"); log.LogError("Yeap!)");
             //end logs
 
+            testToDo();
             Bot.SetWebhookAsync("").Wait();
             Bot.OnCallbackQuery += BotOnCallbackQueryReceived;
             Bot.OnMessage += BotOnMessageReceived;
@@ -81,7 +82,8 @@ namespace PodCastBot
             //Bot.StopReceiving();
         }
 
-        
+
+
         private static void BotOnReceiveError(object sender, ReceiveErrorEventArgs receiveErrorEventArgs)
         {
             log.LogWarning(receiveErrorEventArgs.ApiRequestException.Message);
@@ -342,5 +344,76 @@ namespace PodCastBot
             await Bot.AnswerCallbackQueryAsync(callbackQueryEventArgs.CallbackQuery.Id,
                 $"Received {callbackQueryEventArgs.CallbackQuery.Data}");
         }
+
+        static void findAudios(object _site)
+        {
+            var site = (string)_site;
+            if (site.Contains("("))
+                site.Replace("(", "");
+            if (site.Contains(")"))
+                site = site.Replace(")", "");
+            log.LogTrace(site);
+            var doc = new HtmlDocument();
+            try
+            {
+                var x = httpClient.GetAsync(site).Result;
+                log.LogTrace(x.StatusCode.ToString());
+                var htmlStream = x.Content.ReadAsStreamAsync().Result;
+                doc.Load(htmlStream);
+            }
+            catch
+            {
+                log.LogWarning(" не смогли открыть сайт " + site);
+                return;
+            }
+
+            var audios = doc.DocumentNode.Descendants("audio");
+            if (doc.DocumentNode.InnerHtml.IndexOf("audio") > 0)
+            {//log.LogError("!!!!!!!!!!! audio exists on " + site);
+            }
+            else if (doc.DocumentNode.InnerHtml.IndexOf(".mp3") > 0)
+            {
+                log.LogDebug(".mp3 " + site);
+                var gg = doc.DocumentNode.SelectNodes(".//a[@href.contains(.mp3)]");
+                // смотрим на втором уровне сайта
+                SendMe(site);
+            }
+            //log.LogInformation(string.Join("\r\n", audios.ToList().Select(q => q.InnerHtml)));
+
+
+            // if (audios.Count() > 0)
+            // {
+            //     audios.First().
+            // }
+        }
+
+        static void SendMe(string text)
+        {
+            Bot.SendTextMessageAsync(180504101, text);
+        }
+
+        static IEnumerable<string> GetPodcasts()///get PodCasts ToDo: repository or easier
+        {
+            var str = httpClient.GetAsync("https://raw.githubusercontent.com/AveVlad/russia-it-podcast/master/README.md").Result;
+            var sttr = ""; sttr = str.Content.ReadAsStringAsync().Result;
+
+            var podcasts = sttr.Split("<br><hr><br>");
+            return podcasts.Select(_ => _.Replace("--------------------------------------", "---")
+            .Replace("\n\n", "\n"));
+        }
+
+
+        static string GetUrlFromPodcast(string podcastText)//firstUrl from podcast text
+        {
+            var pT = podcastText;
+            var firstUrl = podcastText.Substring(pT.IndexOf("[site](") + 7, pT.IndexOf(")", pT.IndexOf("[site](")) - pT.IndexOf("[site](") + 1 - 7);
+            return firstUrl;
+        }
+
+        static void testToDo()
+        {
+
+        }
+
     }
 }
