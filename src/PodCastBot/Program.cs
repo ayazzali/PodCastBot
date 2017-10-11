@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net;
+using System.Net.Http;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -16,21 +18,23 @@ using Microsoft.Extensions.Logging;
 using NLog.Web;
 using NLog.Extensions.Logging;
 using Iveonik.Stemmers;
+using HtmlAgilityPack;
 
 namespace PodCastBot
 {
     public static class ApplicationLogging
+    {
+        static ApplicationLogging()
         {
-            static ApplicationLogging()
-            {
-                ApplicationLogging.LoggerFactory.AddNLog();
-                ApplicationLogging.LoggerFactory.ConfigureNLog("NLog.config");
-            }
-            public static ILoggerFactory LoggerFactory { get; } =
-              new LoggerFactory();
-            public static ILogger CreateLogger<T>() =>
-              LoggerFactory.CreateLogger<T>();
+            ApplicationLogging.LoggerFactory.AddNLog();
+            ApplicationLogging.LoggerFactory.ConfigureNLog("NLog.config");
+            ApplicationLogging.LoggerFactory.AddConsole();
         }
+        public static ILoggerFactory LoggerFactory { get; } =
+          new LoggerFactory();
+        public static ILogger CreateLogger<T>() =>
+          LoggerFactory.CreateLogger<T>();
+    }
     class Program
     {
         static ILogger log;
@@ -38,8 +42,11 @@ namespace PodCastBot
 
         static string StorePath = "podcasts.txt";
         static List<string> Store = System.IO.File.ReadAllLines(StorePath).ToList();
+        public static NLog.Logger l = NLog.LogManager.GetCurrentClassLogger();
+        static HttpClient httpClient = new HttpClient();
         static void Main(string[] args)
         {
+            l.Error("nlog");
             //COMMANDS ON LINUX
             //for running in background: nohup dotnet run&
             //ps -e
@@ -74,6 +81,7 @@ namespace PodCastBot
             //Bot.StopReceiving();
         }
 
+        
         private static void BotOnReceiveError(object sender, ReceiveErrorEventArgs receiveErrorEventArgs)
         {
             log.LogWarning(receiveErrorEventArgs.ApiRequestException.Message);
@@ -163,7 +171,7 @@ namespace PodCastBot
         private static async void BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
         {
             var message = messageEventArgs.Message;
-
+            log.LogInformation(message.Chat.Id.ToString());
             if (message == null || message.Type != MessageType.TextMessage) return;
 
             //config
@@ -232,98 +240,100 @@ namespace PodCastBot
 
             }
 
+            //in here i want to get mp3 or smth from link of podcast
+
             //выдача
             await Bot.SendTextMessageAsync(message.Chat.Id, Store.Aggregate((av, e) => av + Environment.NewLine + e), parseMode: ParseMode.Html
                 /*replyMarkup: keyboard*/);
 
 
             return;
-            #region может приголится..
-            if (message.Text.StartsWith("/inline")) // send inline keyboard
-            {
-                await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.Typing);
+            #region может пригодится..
+            //             if (message.Text.StartsWith("/inline")) // send inline keyboard
+            //             {
+            //                 await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.Typing);
 
-                var keyboard = new InlineKeyboardMarkup(new[]
-                {
-                    new[] // first row
-                    {
-                        new InlineKeyboardButton("1.1"),
-                        new InlineKeyboardButton("1.2"),
-                    },
-                    new[] // second row
-                    {
-                        new InlineKeyboardButton("2.1"),
-                        new InlineKeyboardButton("2.2"),
-                    }
-                });
+            //                 var keyboard = new InlineKeyboardMarkup(new[]
+            //                 {
+            //                     new[] // first row
+            //                     {
+            //                         new InlineKeyboardButton("1.1"),
+            //                         new InlineKeyboardButton("1.2"),
+            //                     },
+            //                     new[] // second row
+            //                     {
+            //                         new InlineKeyboardButton("2.1"),
+            //                         new InlineKeyboardButton("2.2"),
+            //                     }
+            //                 });
 
-                await Task.Delay(500); // simulate longer running task
+            //                 await Task.Delay(500); // simulate longer running task
 
-                await Bot.SendTextMessageAsync(message.Chat.Id, "Choose",
-                    replyMarkup: keyboard);
-            }
-            else if (message.Text.StartsWith("/keyboard")) // send custom keyboard
-            {
-                var keyboard = new ReplyKeyboardMarkup(new[]
-                {
-                    new [] // first row
-                    {
-                        new KeyboardButton("1.1"),
-                        new KeyboardButton("1.2"),
-                    },
-                    new [] // last row
-                    {
-                        new KeyboardButton("2.1"),
-                        new KeyboardButton("2.2"),
-                    }
-                });
+            //                 await Bot.SendTextMessageAsync(message.Chat.Id, "Choose",
+            //                     replyMarkup: keyboard);
+            //             }
+            //             else if (message.Text.StartsWith("/keyboard")) // send custom keyboard
+            //             {
+            //                 var keyboard = new ReplyKeyboardMarkup(new[]
+            //                 {
+            //                     new [] // first row
+            //                     {
+            //                         new KeyboardButton("1.1"),
+            //                         new KeyboardButton("1.2"),
+            //                     },
+            //                     new [] // last row
+            //                     {
+            //                         new KeyboardButton("2.1"),
+            //                         new KeyboardButton("2.2"),
+            //                     }
+            //                 });
 
-                await Bot.SendTextMessageAsync(message.Chat.Id, "Choose",
-                    replyMarkup: keyboard);
-            }
-            else if (message.Text.StartsWith("/photo")) // send a photo
-            {
-                await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.UploadPhoto);
+            //                 await Bot.SendTextMessageAsync(message.Chat.Id, "Choose",
+            //                     replyMarkup: keyboard);
+            //             }
+            //             else if (message.Text.StartsWith("/photo")) // send a photo
+            //             {
+            //                 await Bot.SendChatActionAsync(message.Chat.Id, ChatAction.UploadPhoto);
 
-                const string file = @"<FilePath>";
+            //                 const string file = @"<FilePath>";
 
-                var fileName = file.Split('\\').Last();
+            //                 var fileName = file.Split('\\').Last();
 
-                using (var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    var fts = new FileToSend(fileName, fileStream);
+            //                 using (var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
+            //                 {
+            //                     var fts = new FileToSend(fileName, fileStream);
 
-                    await Bot.SendPhotoAsync(message.Chat.Id, fts, "Nice Picture");
-                }
-            }
-            else if (message.Text.StartsWith("/request")) // request location or contact
-            {
-                var keyboard = new ReplyKeyboardMarkup(new[]
-                {
-                    new KeyboardButton("Location")
-                    {
-                        RequestLocation = true
-                    },
-                    new KeyboardButton("Contact")
-                    {
-                        RequestContact = true
-                    },
-                });
+            //                     await Bot.SendPhotoAsync(message.Chat.Id, fts, "Nice Picture");
+            //                 }
+            //             }
+            //             else if (message.Text.StartsWith("/request")) // request location or contact
+            //             {
+            //                 var keyboard = new ReplyKeyboardMarkup(new[]
+            //                 {
+            //                     new KeyboardButton("Location")
+            //                     {
+            //                         RequestLocation = true
+            //                     },
+            //                     new KeyboardButton("Contact")
+            //                     {
+            //                         RequestContact = true
+            //                     },
+            //                 });
 
-                await Bot.SendTextMessageAsync(message.Chat.Id, "Who or Where are you?", replyMarkup: keyboard);
-            }
-            else
-            {
-                var usage = @"Usage:
-/inline   - send inline keyboard
-/keyboard - send custom keyboard
-/photo    - send a photo
-/request  - request location or contact
-";
+            //                 await Bot.SendTextMessageAsync(message.Chat.Id, "Who or Where are you?", replyMarkup: keyboard);
+            //             }
+            //             else
+            //             {
+            //                 var usage = @"Usage:
+            // /inline   - send inline keyboard
+            // /keyboard - send custom keyboard
+            // /photo    - send a photo
+            // /request  - request location or contact
+            // ";
 
-                await Bot.SendTextMessageAsync(message.Chat.Id, usage,
-                    replyMarkup: new ReplyKeyboardHide());
-            }
+            //                 await Bot.SendTextMessageAsync(message.Chat.Id, usage,
+            //                     replyMarkup: new ReplyKeyboardHide());
+            //             }
             #endregion
         }
 
