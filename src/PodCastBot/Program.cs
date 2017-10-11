@@ -37,16 +37,16 @@ namespace PodCastBot
     }
     class Program
     {
-        static ILogger log;
+        //static ILogger log;
         private static readonly TelegramBotClient Bot = new TelegramBotClient("267989730:AAH7VbASzQeOLWf8iLSdusooE00Pg_qlao4");
 
         static string StorePath = "podcasts.txt";
         static List<string> Store = System.IO.File.ReadAllLines(StorePath).ToList();
-        public static NLog.Logger l = NLog.LogManager.GetCurrentClassLogger();
+        public static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
         static HttpClient httpClient = new HttpClient();
         static void Main(string[] args)
         {
-            l.Error("nlog");
+            log.Error("nlog");
             //COMMANDS ON LINUX
             //for running in background: nohup dotnet run&
             //ps -e
@@ -54,9 +54,9 @@ namespace PodCastBot
 
             //init logs
 
-            log = ApplicationLogging.LoggerFactory.CreateLogger("my name");
-            //ApplicationLogging.LoggerFactory.AddConsole();//then logs will be doubled, couse NLog.config have console type logs too :)
-            log.LogCritical("Yeap!)"); log.LogError("Yeap!)");
+            //old log = ApplicationLogging.LoggerFactory.CreateLogger("my name");
+            //ApplicationLogging.LoggerFactory.AddConsole();//then logs will be doubled, couse Nl.config have console type logs too :)
+            log.Error("Yeap!)"); log.Error("Yeap!)");
             //end logs
 
             testToDo();
@@ -76,7 +76,7 @@ namespace PodCastBot
                 //Console.Title = me.Username;
 
             }
-            catch (Exception e) { log.LogWarning(e, "не смогли узнать имя бота."); }
+            catch (Exception e) { log.Warn(e, "не смогли узнать имя бота."); }
             Bot.StartReceiving();
             while (true) { Thread.Sleep(999999999); }//Console.ReadLine(); //instead this
             //Bot.StopReceiving();
@@ -86,7 +86,7 @@ namespace PodCastBot
 
         private static void BotOnReceiveError(object sender, ReceiveErrorEventArgs receiveErrorEventArgs)
         {
-            log.LogWarning(receiveErrorEventArgs.ApiRequestException.Message);
+            log.Warn(receiveErrorEventArgs.ApiRequestException.Message);
             Thread.Sleep(60 * 1000);
             //Debugger.Break();
         }
@@ -173,7 +173,7 @@ namespace PodCastBot
         private static async void BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
         {
             var message = messageEventArgs.Message;
-            log.LogInformation(message.Chat.Id.ToString());
+            log.Info(message.Chat.Id.ToString());
             if (message == null || message.Type != MessageType.TextMessage) return;
 
             //config
@@ -352,33 +352,33 @@ namespace PodCastBot
                 site.Replace("(", "");
             if (site.Contains(")"))
                 site = site.Replace(")", "");
-            log.LogTrace(site);
+            log.Trace(site);
             var doc = new HtmlDocument();
             try
             {
                 var x = httpClient.GetAsync(site).Result;
-                log.LogTrace(x.StatusCode.ToString());
+                log.Trace(x.StatusCode.ToString());
                 var htmlStream = x.Content.ReadAsStreamAsync().Result;
                 doc.Load(htmlStream);
             }
             catch
             {
-                log.LogWarning(" не смогли открыть сайт " + site);
+                log.Warn(" не смогли открыть сайт " + site);
                 return;
             }
 
             var audios = doc.DocumentNode.Descendants("audio");
             if (doc.DocumentNode.InnerHtml.IndexOf("audio") > 0)
-            {//log.LogError("!!!!!!!!!!! audio exists on " + site);
+            {//l.Error("!!!!!!!!!!! audio exists on " + site);
             }
             else if (doc.DocumentNode.InnerHtml.IndexOf(".mp3") > 0)
             {
-                log.LogDebug(".mp3 " + site);
+                log.Debug(".mp3 " + site);
                 var gg = doc.DocumentNode.SelectNodes(".//a[@href.contains(.mp3)]");
                 // смотрим на втором уровне сайта
                 SendMe(site);
             }
-            //log.LogInformation(string.Join("\r\n", audios.ToList().Select(q => q.InnerHtml)));
+            //l.Information(string.Join("\r\n", audios.ToList().Select(q => q.InnerHtml)));
 
 
             // if (audios.Count() > 0)
