@@ -230,8 +230,8 @@ namespace PodCastBot
                     //выдача
                     if (SortedBySearch.Any())
                     {
-                        var t = SortedBySearch.Aggregate((av, e) => av + e);
-                        await Bot.SendTextMessageAsync(message.Chat.Id, t,parseMode:ParseMode.Html);
+                        var t = SortedBySearch.Aggregate((av, e) => av + Environment.NewLine + e);
+                        await Bot.SendTextMessageAsync(message.Chat.Id, t, parseMode: ParseMode.Html);
                     }
                     else
                         await Bot.SendTextMessageAsync(message.Chat.Id, @"Поиск не дал результатов. 
