@@ -1,3 +1,5 @@
+t.me/podcast_search_rus_bot
+
 # PodCastBot
 telegram.bot for searching podcasts
 
