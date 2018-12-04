@@ -20,7 +20,6 @@ FROM microsoft/dotnet:aspnetcore-runtime
 WORKDIR /appr
 COPY --from=build-env /app/out .
 # --from=build-env /app/src/PodCastBot/out .
-RUN echo pub=$CI_pub_test prv=$CI_prv_test
-ENTRYPOINT  echo 0$CI_pub_test 1$CI_prv_test \
+ENTRYPOINT  echo 0$CI_pub_test 1$CI_prv_test 0$Test1 1$Test2\
 && sed -i 's/267989730:AAH7VbASzQeOLWf8iLSdusooE00Pg_qlao4/'$TKEY'/g' cfg.json \
 && dotnet  PodCastBot.dll
