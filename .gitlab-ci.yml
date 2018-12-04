@@ -14,7 +14,7 @@ deploy:
     - echo Test1=$CI_pub_test  Test2=$CI_prv_test
   script:
     - docker stop podcast && docker rm podcast || true || cd
-    - docker --no-cache build . -t g4
+    - docker  build --no-cache . -t g4
     # -e LKEY=$CI_LOG_BACK_TG_ID is optional
     # -e Test1=$CI_pub_test -e Test2=$CI_prv_test is just for me (test gitlab vars)
     - docker run  --name podcast --restart unless-stopped  -d  -e Test1=$CI_pub_test -e Test2=$CI_prv_test  -e TKEY=$CI_TELEGRAM_KEY  g4
