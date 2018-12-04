@@ -13,6 +13,7 @@
   <!-- Pay attention below!!! -->
     <None Include="NLog.config" CopyToOutputDirectory="PreserveNewest" />
     <PackageReference Include="DevZH.HtmlAgilityPack" Version="1.4.9.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
     <!-- <PackageReference Include="Markdig" Version="0.13.3" /> -->
     <PackageReference Include="nlog" Version="5.0.0-beta11" />
     <PackageReference Include="NLog.Config" Version="4.4.6" />
@@ -23,9 +24,25 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.0" />
+
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <!--<PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
+    <PackageReference Include="NReco.Logging.File" Version="1.0.4" />-->
+    
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Stemmers\Stemmers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="cfg.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="podcasts.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
