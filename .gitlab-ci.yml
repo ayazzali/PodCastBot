@@ -11,6 +11,7 @@ deploy:
     - whoami
     - ls || dir
     - docker ps -a
+    - echo Test1=$CI_pub_test  Test2=$CI_prv_test
   script:
     - docker stop podcast && docker rm podcast || true || cd
     - docker --no-cache build . -t g4
