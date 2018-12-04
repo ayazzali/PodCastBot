@@ -60,7 +60,7 @@ namespace PodCastBot
             //end logs
 
             testToDo();
-            Bot.SetWebhookAsync("").Wait();
+            //Bot.SetWebhookAsync("").Wait();
             Bot.OnCallbackQuery += BotOnCallbackQueryReceived;
             Bot.OnMessage += BotOnMessageReceived;
             Bot.OnMessageEdited += BotOnMessageReceived;
