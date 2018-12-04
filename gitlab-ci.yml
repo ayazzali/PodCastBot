@@ -1,0 +1,25 @@
+# This file is a template, and might need editing before it works on your project.
+# copy from "https://github.com/ayazzali/convert_audio_message_to_text__bot.git"
+image: docker:latest
+
+services:
+  - docker:dind
+
+deploy:
+  stage: deploy
+  before_script:
+    - whoami
+    - ls || dir
+    - docker ps -a
+  script:
+    - docker stop podcast && docker rm podcast || true || cd
+    - docker build . -t g4
+    # -e LKEY=$CI_LOG_BACK_TG_ID is optional
+    # -e Test1=$CI_pub_test -e Test2=$CI_prv_test is just for me (test gitlab vars)
+    - docker run  --name podcast --restart unless-stopped  -d  -e Test1=$CI_pub_test -e Test2=$CI_prv_test  -e TKEY=$CI_TELEGRAM_KEY  g4
+    
+    - docker logs podcast # keys might be
+    - sleep 1m || timeout 60
+    - docker ps -a
+  only:
+    - master
