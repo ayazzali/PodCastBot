@@ -3,12 +3,15 @@ FROM microsoft/dotnet:sdk AS build-env
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
-COPY PodCastBot/*.csproj ./
+# COPY src/PodCastBot/*.csproj ./
+COPY / ./
 RUN dotnet restore
 
 # Copy everything else and build
-COPY PodCastBot/. ./
-RUN dotnet publish -c Release -o out
+# COPY src/. ./
+
+# правда обслоютно всё будет в одной папке 
+RUN dotnet publish -c Release -o ../../out 
 
 
 
@@ -16,6 +19,7 @@ RUN dotnet publish -c Release -o out
 FROM microsoft/dotnet:aspnetcore-runtime
 WORKDIR /appr
 COPY --from=build-env /app/out .
+# --from=build-env /app/src/PodCastBot/out .
 RUN echo pub=$CI_pub_test prv=$CI_prv_test
 ENTRYPOINT  echo $CI_pub_test $CI_prv_test \
 && sed -i 's/key2/'$YKEY'/g' cfg.json \
