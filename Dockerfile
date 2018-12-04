@@ -21,6 +21,6 @@ WORKDIR /appr
 COPY --from=build-env /app/out .
 # --from=build-env /app/src/PodCastBot/out .
 RUN echo pub=$CI_pub_test prv=$CI_prv_test
-ENTRYPOINT  echo $CI_pub_test $CI_prv_test \
-&& sed -i 's/key2/'$YKEY'/g' cfg.json \
+ENTRYPOINT  echo 0$CI_pub_test 1$CI_prv_test \
+&& sed -i 's/267989730:AAH7VbASzQeOLWf8iLSdusooE00Pg_qlao4/'$TKEY'/g' cfg.json \
 && dotnet  PodCastBot.dll
